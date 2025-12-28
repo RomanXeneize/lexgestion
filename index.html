@@ -79,7 +79,7 @@ li {
   padding: 8px;
   margin-top: 6px;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
 }
 </style>
 </head>
@@ -95,21 +95,21 @@ li {
       <div class="card">
         <h2>Vencimientos</h2>
         <input id="vencInput" placeholder="Nuevo vencimiento">
-        <button onclick="agregar('vencimientos','vencInput')">Agregar</button>
+        <button onclick="agregarSimple('vencimientos','vencInput')">Agregar</button>
         <ul id="vencimientos"></ul>
       </div>
 
       <div class="card">
         <h2>Audiencias</h2>
         <input id="audInput" placeholder="Nueva audiencia">
-        <button onclick="agregar('audiencias','audInput')">Agregar</button>
+        <button onclick="agregarSimple('audiencias','audInput')">Agregar</button>
         <ul id="audiencias"></ul>
       </div>
 
       <div class="card">
         <h2>Proyectos / Consultas</h2>
         <input id="projInput" placeholder="Nuevo proyecto">
-        <button onclick="agregar('proyectos','projInput')">Agregar</button>
+        <button onclick="agregarSimple('proyectos','projInput')">Agregar</button>
         <ul id="proyectos"></ul>
       </div>
     </div>
@@ -117,7 +117,13 @@ li {
     <div>
       <div class="card">
         <h2>Agenda de calle</h2>
-        <p>Sin tareas</p>
+
+        <input id="agendaFecha" type="date">
+        <input id="agendaLugar" placeholder="Lugar">
+        <input id="agendaTarea" placeholder="Tarea">
+        <button onclick="agregarAgenda()">Agregar</button>
+
+        <ul id="agenda"></ul>
       </div>
     </div>
 
@@ -127,15 +133,20 @@ li {
 <script>
 let db;
 
-const request = indexedDB.open("lexgestionDB", 1);
+const request = indexedDB.open("lexgestionDB", 2);
 
 request.onupgradeneeded = e => {
   db = e.target.result;
+
   ["vencimientos", "audiencias", "proyectos"].forEach(store => {
     if (!db.objectStoreNames.contains(store)) {
       db.createObjectStore(store, { keyPath: "id", autoIncrement: true });
     }
   });
+
+  if (!db.objectStoreNames.contains("agenda")) {
+    db.createObjectStore("agenda", { keyPath: "id", autoIncrement: true });
+  }
 };
 
 request.onsuccess = e => {
@@ -143,18 +154,32 @@ request.onsuccess = e => {
   cargarTodo();
 };
 
-function agregar(storeName, inputId) {
+function agregarSimple(storeName, inputId) {
   const input = document.getElementById(inputId);
   const texto = input.value.trim();
   if (!texto) return;
 
   const tx = db.transaction(storeName, "readwrite");
-  const store = tx.objectStore(storeName);
-  store.add({ texto, fecha: new Date().toISOString() });
-
+  tx.objectStore(storeName).add({ texto });
   tx.oncomplete = () => {
     input.value = "";
     cargar(storeName);
+  };
+}
+
+function agregarAgenda() {
+  const fecha = agendaFecha.value;
+  const lugar = agendaLugar.value.trim();
+  const tarea = agendaTarea.value.trim();
+  if (!fecha || !tarea) return;
+
+  const tx = db.transaction("agenda", "readwrite");
+  tx.objectStore("agenda").add({ fecha, lugar, tarea });
+  tx.oncomplete = () => {
+    agendaFecha.value = "";
+    agendaLugar.value = "";
+    agendaTarea.value = "";
+    cargarAgenda();
   };
 }
 
@@ -162,21 +187,38 @@ function cargar(storeName) {
   const ul = document.getElementById(storeName);
   ul.innerHTML = "";
 
-  const tx = db.transaction(storeName, "readonly");
-  const store = tx.objectStore(storeName);
-  store.openCursor().onsuccess = e => {
-    const cursor = e.target.result;
-    if (cursor) {
-      const li = document.createElement("li");
-      li.textContent = cursor.value.texto;
-      ul.appendChild(li);
-      cursor.continue();
-    }
-  };
+  db.transaction(storeName).objectStore(storeName)
+    .openCursor().onsuccess = e => {
+      const c = e.target.result;
+      if (c) {
+        const li = document.createElement("li");
+        li.textContent = c.value.texto;
+        ul.appendChild(li);
+        c.continue();
+      }
+    };
+}
+
+function cargarAgenda() {
+  const ul = document.getElementById("agenda");
+  ul.innerHTML = "";
+
+  db.transaction("agenda").objectStore("agenda")
+    .openCursor().onsuccess = e => {
+      const c = e.target.result;
+      if (c) {
+        const li = document.createElement("li");
+        li.textContent =
+          `${c.value.fecha} – ${c.value.lugar || "Sin lugar"} – ${c.value.tarea}`;
+        ul.appendChild(li);
+        c.continue();
+      }
+    };
 }
 
 function cargarTodo() {
   ["vencimientos", "audiencias", "proyectos"].forEach(cargar);
+  cargarAgenda();
 }
 </script>
 
