@@ -2,223 +2,278 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>LexGestión</title>
+<title>LexGestión 2.2</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0b1220;
-  color: #e5e7eb;
+:root{
+  --bg:#0b1220;
+  --panel:#0f1b2d;
+  --panel2:#0c1626;
+  --border:#1f2a44;
+  --primary:#2563eb;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
 }
-
-header {
-  background: #070d1a;
-  padding: 15px 20px;
-  font-size: 20px;
-  font-weight: bold;
-  border-bottom: 1px solid #1f2a44;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  height:100vh;
 }
-
-main {
-  padding: 20px;
-  max-width: 1200px;
-  margin: auto;
+aside{
+  width:230px;
+  background:var(--panel2);
+  border-right:1px solid var(--border);
+  padding:16px;
 }
-
-h2 {
-  font-size: 14px;
-  text-transform: uppercase;
-  color: #9ca3af;
-  margin-bottom: 8px;
+aside h1{font-size:16px;margin-bottom:20px}
+aside button{
+  width:100%;
+  background:none;
+  border:none;
+  color:var(--text);
+  text-align:left;
+  padding:10px;
+  border-radius:6px;
+  cursor:pointer;
 }
-
-.grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 16px;
+aside button.active,
+aside button:hover{background:var(--primary)}
+main{flex:1;padding:20px;overflow:auto}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
 }
-
-.card {
-  background: #0f1b2d;
-  border: 1px solid #1f2a44;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
+.section{display:none}
+.section.active{display:block}
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:16px;
 }
-
-input, button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 8px;
-  font-size: 14px;
+.card h3{
+  margin:0 0 8px;
+  font-size:13px;
+  color:var(--muted);
+  text-transform:uppercase;
 }
-
-input {
-  background: #081226;
-  border: 1px solid #1f2a44;
-  color: white;
+input,button{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:#081226;
+  color:var(--text);
 }
-
-button {
-  background: #2563eb;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-  margin-top: 10px;
-}
-
-li {
-  background: #081226;
-  padding: 8px;
-  margin-top: 6px;
-  border-radius: 6px;
-  font-size: 13px;
+button.primary{background:var(--primary);border:none}
+ul{list-style:none;padding:0;margin-top:10px}
+li{
+  background:#081226;
+  padding:8px;
+  border-radius:6px;
+  margin-top:6px;
+  font-size:13px;
 }
 </style>
 </head>
 
 <body>
 
-<header>LEXGESTIÓN</header>
+<aside>
+  <h1>LexGestión</h1>
+  <button class="active" onclick="show('agenda',this)">Agenda</button>
+  <button onclick="show('causas',this)">Causas</button>
+  <button onclick="show('act',this)">Actuaciones</button>
+  <button onclick="show('aud',this)">Audiencias</button>
+  <button onclick="show('hon',this)">Honorarios</button>
+</aside>
 
 <main>
-  <div class="grid">
 
-    <div>
-      <div class="card">
-        <h2>Vencimientos</h2>
-        <input id="vencInput" placeholder="Nuevo vencimiento">
-        <button onclick="agregarSimple('vencimientos','vencInput')">Agregar</button>
-        <ul id="vencimientos"></ul>
-      </div>
+<header>
+  <h2 id="title">Agenda</h2>
+  <span id="fecha"></span>
+</header>
 
-      <div class="card">
-        <h2>Audiencias</h2>
-        <input id="audInput" placeholder="Nueva audiencia">
-        <button onclick="agregarSimple('audiencias','audInput')">Agregar</button>
-        <ul id="audiencias"></ul>
-      </div>
-
-      <div class="card">
-        <h2>Proyectos / Consultas</h2>
-        <input id="projInput" placeholder="Nuevo proyecto">
-        <button onclick="agregarSimple('proyectos','projInput')">Agregar</button>
-        <ul id="proyectos"></ul>
-      </div>
-    </div>
-
-    <div>
-      <div class="card">
-        <h2>Agenda de calle</h2>
-
-        <input id="agendaFecha" type="date">
-        <input id="agendaLugar" placeholder="Lugar">
-        <input id="agendaTarea" placeholder="Tarea">
-        <button onclick="agregarAgenda()">Agregar</button>
-
-        <ul id="agenda"></ul>
-      </div>
-    </div>
-
+<!-- AGENDA -->
+<section id="agenda" class="section active">
+  <div class="card">
+    <h3>Agenda</h3>
+    <input type="date" id="agendaFecha">
+    <input placeholder="Lugar" id="agendaLugar">
+    <input placeholder="Tarea" id="agendaTarea">
+    <input placeholder="Observaciones" id="agendaObs">
+    <button class="primary" onclick="addAgenda()">Agregar</button>
+    <ul id="agenda-list"></ul>
   </div>
+</section>
+
+<!-- CAUSAS -->
+<section id="causas" class="section">
+  <div class="card">
+    <h3>Causa Judicial</h3>
+    <input placeholder="Carátula" id="caratula">
+    <input placeholder="Expediente" id="expediente">
+    <input placeholder="Juzgado" id="juzgado">
+    <input placeholder="Cliente" id="cliente">
+    <input placeholder="Estado" id="estado">
+    <button class="primary" onclick="addCausa()">Guardar</button>
+    <ul id="causas-list"></ul>
+  </div>
+</section>
+
+<!-- ACTUACIONES -->
+<section id="act" class="section">
+  <div class="card">
+    <h3>Actuación</h3>
+    <input type="date" id="actFecha">
+    <input placeholder="Descripción" id="actDesc">
+    <input placeholder="Causa" id="actCausa">
+    <input placeholder="Observaciones" id="actObs">
+    <button class="primary" onclick="addAct()">Agregar</button>
+    <ul id="act-list"></ul>
+  </div>
+</section>
+
+<!-- AUDIENCIAS -->
+<section id="aud" class="section">
+  <div class="card">
+    <h3>Audiencia</h3>
+    <input type="date" id="audFecha">
+    <input type="time" id="audHora">
+    <input placeholder="Tipo" id="audTipo">
+    <input placeholder="Causa" id="audCausa">
+    <input placeholder="Lugar" id="audLugar">
+    <button class="primary" onclick="addAud()">Agregar</button>
+    <ul id="aud-list"></ul>
+  </div>
+</section>
+
+<!-- HONORARIOS -->
+<section id="hon" class="section">
+  <div class="card">
+    <h3>Honorarios</h3>
+    <input type="date" id="honFecha">
+    <input placeholder="Monto" id="honMonto">
+    <input placeholder="Concepto" id="honConcepto">
+    <input placeholder="Causa" id="honCausa">
+    <button class="primary" onclick="addHon()">Agregar</button>
+    <ul id="hon-list"></ul>
+  </div>
+</section>
+
 </main>
 
 <script>
+const dbName="LexGestionDB_v3";
 let db;
 
-const request = indexedDB.open("lexgestionDB", 2);
+fecha.textContent=new Date().toLocaleDateString("es-AR");
 
-request.onupgradeneeded = e => {
-  db = e.target.result;
-
-  ["vencimientos", "audiencias", "proyectos"].forEach(store => {
-    if (!db.objectStoreNames.contains(store)) {
-      db.createObjectStore(store, { keyPath: "id", autoIncrement: true });
-    }
+const req=indexedDB.open(dbName,1);
+req.onupgradeneeded=e=>{
+  db=e.target.result;
+  ["agenda","causas","act","aud","hon"].forEach(s=>{
+    if(!db.objectStoreNames.contains(s))
+      db.createObjectStore(s,{keyPath:"id",autoIncrement:true});
   });
-
-  if (!db.objectStoreNames.contains("agenda")) {
-    db.createObjectStore("agenda", { keyPath: "id", autoIncrement: true });
-  }
 };
+req.onsuccess=e=>{db=e.target.result;loadAll()};
 
-request.onsuccess = e => {
-  db = e.target.result;
-  cargarTodo();
-};
+function show(id,btn){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll("aside button").forEach(b=>b.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  btn.classList.add("active");
+  title.textContent=btn.textContent;
+}
 
-function agregarSimple(storeName, inputId) {
-  const input = document.getElementById(inputId);
-  const texto = input.value.trim();
-  if (!texto) return;
-
-  const tx = db.transaction(storeName, "readwrite");
-  tx.objectStore(storeName).add({ texto });
-  tx.oncomplete = () => {
-    input.value = "";
-    cargar(storeName);
+/* AGENDA */
+function addAgenda(){
+  if(!agendaFecha.value||!agendaTarea.value)return;
+  db.transaction("agenda","readwrite").objectStore("agenda")
+    .add({fecha:agendaFecha.value,lugar:agendaLugar.value,tarea:agendaTarea.value,obs:agendaObs.value})
+    .transaction.oncomplete=loadAgenda;
+}
+function loadAgenda(){
+  const ul=agenda-list; ul.innerHTML="";
+  db.transaction("agenda").objectStore("agenda").openCursor().onsuccess=e=>{
+    const c=e.target.result;
+    if(c){ul.innerHTML+=`<li>${c.value.fecha} – ${c.value.tarea}</li>`;c.continue();}
   };
 }
 
-function agregarAgenda() {
-  const fecha = agendaFecha.value;
-  const lugar = agendaLugar.value.trim();
-  const tarea = agendaTarea.value.trim();
-  if (!fecha || !tarea) return;
-
-  const tx = db.transaction("agenda", "readwrite");
-  tx.objectStore("agenda").add({ fecha, lugar, tarea });
-  tx.oncomplete = () => {
-    agendaFecha.value = "";
-    agendaLugar.value = "";
-    agendaTarea.value = "";
-    cargarAgenda();
+/* CAUSAS */
+function addCausa(){
+  if(!caratula.value)return;
+  db.transaction("causas","readwrite").objectStore("causas")
+    .add({caratula:caratula.value,expediente:expediente.value,estado:estado.value})
+    .transaction.oncomplete=loadCausas;
+}
+function loadCausas(){
+  const ul=causas-list; ul.innerHTML="";
+  db.transaction("causas").objectStore("causas").openCursor().onsuccess=e=>{
+    const c=e.target.result;
+    if(c){ul.innerHTML+=`<li>${c.value.caratula} – ${c.value.estado}</li>`;c.continue();}
   };
 }
 
-function cargar(storeName) {
-  const ul = document.getElementById(storeName);
-  ul.innerHTML = "";
-
-  db.transaction(storeName).objectStore(storeName)
-    .openCursor().onsuccess = e => {
-      const c = e.target.result;
-      if (c) {
-        const li = document.createElement("li");
-        li.textContent = c.value.texto;
-        ul.appendChild(li);
-        c.continue();
-      }
-    };
+/* ACTUACIONES */
+function addAct(){
+  if(!actDesc.value)return;
+  db.transaction("act","readwrite").objectStore("act")
+    .add({fecha:actFecha.value,desc:actDesc.value,causa:actCausa.value})
+    .transaction.oncomplete=loadAct;
+}
+function loadAct(){
+  const ul=act-list; ul.innerHTML="";
+  db.transaction("act").objectStore("act").openCursor().onsuccess=e=>{
+    const c=e.target.result;
+    if(c){ul.innerHTML+=`<li>${c.value.fecha} – ${c.value.desc}</li>`;c.continue();}
+  };
 }
 
-function cargarAgenda() {
-  const ul = document.getElementById("agenda");
-  ul.innerHTML = "";
-
-  db.transaction("agenda").objectStore("agenda")
-    .openCursor().onsuccess = e => {
-      const c = e.target.result;
-      if (c) {
-        const li = document.createElement("li");
-        li.textContent =
-          `${c.value.fecha} – ${c.value.lugar || "Sin lugar"} – ${c.value.tarea}`;
-        ul.appendChild(li);
-        c.continue();
-      }
-    };
+/* AUDIENCIAS */
+function addAud(){
+  if(!audFecha.value)return;
+  db.transaction("aud","readwrite").objectStore("aud")
+    .add({fecha:audFecha.value,hora:audHora.value,tipo:audTipo.value,causa:audCausa.value})
+    .transaction.oncomplete=loadAud;
+}
+function loadAud(){
+  const ul=aud-list; ul.innerHTML="";
+  db.transaction("aud").objectStore("aud").openCursor().onsuccess=e=>{
+    const c=e.target.result;
+    if(c){ul.innerHTML+=`<li>${c.value.fecha} ${c.value.hora} – ${c.value.tipo}</li>`;c.continue();}
+  };
 }
 
-function cargarTodo() {
-  ["vencimientos", "audiencias", "proyectos"].forEach(cargar);
-  cargarAgenda();
+/* HONORARIOS */
+function addHon(){
+  if(!honMonto.value)return;
+  db.transaction("hon","readwrite").objectStore("hon")
+    .add({fecha:honFecha.value,monto:honMonto.value,concepto:honConcepto.value})
+    .transaction.oncomplete=loadHon;
+}
+function loadHon(){
+  const ul=hon-list; ul.innerHTML="";
+  db.transaction("hon").objectStore("hon").openCursor().onsuccess=e=>{
+    const c=e.target.result;
+    if(c){ul.innerHTML+=`<li>${c.value.fecha} – $${c.value.monto}</li>`;c.continue();}
+  };
+}
+
+function loadAll(){
+  loadAgenda();loadCausas();loadAct();loadAud();loadHon();
 }
 </script>
 
