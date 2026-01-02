@@ -1,10 +1,13 @@
 {
-  "name": "LexGestión",
+  "name": "LexGestión 2.0",
   "short_name": "LexGestión",
-  "start_url": ".",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0b1220",
-  "theme_color": "#070d1a",
+  "theme_color": "#0b1220",
+  "description": "Sistema de gestión jurídica: causas, agenda, audiencias, tareas y vencimientos.",
+  "lang": "es-AR",
   "icons": [
     {
       "src": "icon-192.png",
