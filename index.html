@@ -1,282 +1,824 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="manifest" href="manifest.json">
-<meta charset="UTF-8">
-<title>LexGestión 2.0</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json" />
+  <title>LexGestión 2.0</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --bg-soft: #111827;
+      --panel: #111c32;
+      --panel-soft: #1a2742;
+      --line: #23314f;
+      --text: #e5e7eb;
+      --text-muted: #9ca3af;
+      --accent: #3b82f6;
+      --success: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --radius: 14px;
+      --radius-sm: 10px;
+    }
 
-<style>
-:root{
-  --bg:#0b1220;
-  --panel:#0f1b2d;
-  --panel2:#0c1626;
-  --border:#1f2a44;
-  --primary:#2563eb;
-  --text:#e5e7eb;
-  --muted:#9ca3af;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui;
-  background:var(--bg);
-  color:var(--text);
-  display:flex;
-  height:100vh;
-}
-aside{
-  width:230px;
-  background:var(--panel2);
-  border-right:1px solid var(--border);
-  padding:16px;
-}
-aside h1{font-size:16px;margin-bottom:20px}
-aside button{
-  width:100%;
-  background:none;
-  border:none;
-  color:var(--text);
-  text-align:left;
-  padding:10px;
-  border-radius:6px;
-  cursor:pointer;
-}
-aside button.active,
-aside button:hover{background:var(--primary)}
-main{flex:1;padding:20px;overflow:auto}
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
-}
-.section{display:none}
-.section.active{display:block}
-.card{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:16px;
-}
-.card h3{
-  margin:0 0 8px;
-  font-size:13px;
-  color:var(--muted);
-  text-transform:uppercase;
-}
-input,button{
-  width:100%;
-  padding:10px;
-  margin-top:8px;
-  border-radius:6px;
-  border:1px solid var(--border);
-  background:#081226;
-  color:var(--text);
-}
-button.primary{background:var(--primary);border:none}
-ul{list-style:none;padding:0;margin-top:10px}
-li{
-  background:#081226;
-  padding:8px;
-  border-radius:6px;
-  margin-top:6px;
-  font-size:13px;
-}
-</style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at top left, #121f39 0%, var(--bg) 45%, #070b15 100%);
+      color: var(--text);
+      display: grid;
+      grid-template-columns: 280px 1fr;
+    }
+
+    aside {
+      background: rgba(14, 22, 39, 0.9);
+      border-right: 1px solid var(--line);
+      padding: 20px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      backdrop-filter: blur(6px);
+    }
+
+    .brand {
+      margin-bottom: 24px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(145deg, #121d34, #0f172b);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .menu {
+      display: grid;
+      gap: 8px;
+    }
+
+    .menu button {
+      width: 100%;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-size: 0.95rem;
+    }
+
+    .menu button:hover,
+    .menu button.active {
+      border-color: #2f4570;
+      background: #182744;
+    }
+
+    main {
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    header h2 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    .meta {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: rgba(17, 28, 50, 0.88);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .card h3 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+    }
+
+    .metric {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .metric-label {
+      margin: 6px 0 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    form {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      border-radius: 9px;
+      border: 1px solid #33496f;
+      background: #101a2f;
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 74px;
+      resize: vertical;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button.primary {
+      background: var(--accent);
+      border-color: transparent;
+      font-weight: 600;
+    }
+
+    .list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .list-item {
+      border: 1px solid #2b3f62;
+      background: #0f192d;
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      font-size: 0.9rem;
+    }
+
+    .list-item .title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .list-item .meta-line {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin: 2px 0;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn-small {
+      padding: 6px 8px;
+      font-size: 0.82rem;
+    }
+
+    .btn-success {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: rgba(34, 197, 94, 0.6);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.6);
+    }
+
+    .empty {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      border: 1px dashed #33496f;
+      border-radius: var(--radius-sm);
+      padding: 12px;
+    }
+
+    @media (max-width: 960px) {
+      body {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        position: static;
+        height: auto;
+      }
+
+      .menu {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid-2,
+      .grid-3,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <aside>
+    <div class="brand">
+      <h1>LexGestión 2.0</h1>
+      <p>Gestión jurídica offline</p>
+    </div>
 
-<aside>
-  <h1>LexGestión</h1>
-  <button class="active" onclick="show('agenda',this)">Agenda</button>
-  <button onclick="show('causas',this)">Causas</button>
-  <button onclick="show('act',this)">Actuaciones</button>
-  <button onclick="show('aud',this)">Audiencias</button>
-  <button onclick="show('hon',this)">Honorarios</button>
-</aside>
+    <nav class="menu" id="menuTabs">
+      <button class="active" data-section="inicio">Inicio</button>
+      <button data-section="causas">Causas</button>
+      <button data-section="actuaciones">Actuaciones</button>
+      <button data-section="audiencias">Audiencias</button>
+      <button data-section="tareas">Agenda / Tareas</button>
+      <button data-section="honorarios">Honorarios</button>
+    </nav>
+  </aside>
 
-<main>
+  <main>
+    <header>
+      <h2 id="pageTitle">Inicio</h2>
+      <div class="meta" id="todayDate"></div>
+    </header>
 
-<header>
-  <h2 id="title">Agenda</h2>
-  <span id="fecha"></span>
-</header>
+    <section id="inicio" class="section active">
+      <div class="grid-3">
+        <article class="card">
+          <p class="metric" id="metricCausas">0</p>
+          <p class="metric-label">Causas registradas</p>
+        </article>
+        <article class="card">
+          <p class="metric" id="metricTareasPendientes">0</p>
+          <p class="metric-label">Tareas pendientes</p>
+        </article>
+        <article class="card">
+          <p class="metric" id="metricHonorariosPendientes">0</p>
+          <p class="metric-label">Honorarios pendientes</p>
+        </article>
+      </div>
+      <div class="grid-2">
+        <article class="card">
+          <h3>Próximos vencimientos (tareas)</h3>
+          <div id="dashboardVencimientos" class="list"></div>
+        </article>
+        <article class="card">
+          <h3>Audiencias cercanas</h3>
+          <div id="dashboardAudiencias" class="list"></div>
+        </article>
+      </div>
+    </section>
 
-<!-- AGENDA -->
-<section id="agenda" class="section active">
-  <div class="card">
-    <h3>Agenda</h3>
-    <input type="date" id="agendaFecha">
-    <input placeholder="Lugar" id="agendaLugar">
-    <input placeholder="Tarea" id="agendaTarea">
-    <input placeholder="Observaciones" id="agendaObs">
-    <button class="primary" onclick="addAgenda()">Agregar</button>
-    <ul id="agenda-list"></ul>
-  </div>
-</section>
+    <section id="causas" class="section">
+      <article class="card">
+        <h3>Nueva causa</h3>
+        <form id="formCausa">
+          <div class="form-grid">
+            <label>Carátula
+              <input required name="caratula" />
+            </label>
+            <label>Expediente
+              <input required name="expediente" />
+            </label>
+            <label>Juzgado
+              <input name="juzgado" />
+            </label>
+            <label>Fuero
+              <input name="fuero" />
+            </label>
+            <label>Parte
+              <input name="parte" />
+            </label>
+            <label>Estado
+              <input name="estado" />
+            </label>
+          </div>
+          <label>Observaciones
+            <textarea name="observaciones"></textarea>
+          </label>
+          <button type="submit" class="primary">Guardar causa</button>
+        </form>
+      </article>
+      <article class="card">
+        <h3>Listado editable de causas</h3>
+        <div id="causasList" class="list"></div>
+      </article>
+    </section>
 
-<!-- CAUSAS -->
-<section id="causas" class="section">
-  <div class="card">
-    <h3>Causa Judicial</h3>
-    <input placeholder="Carátula" id="caratula">
-    <input placeholder="Expediente" id="expediente">
-    <input placeholder="Juzgado" id="juzgado">
-    <input placeholder="Cliente" id="cliente">
-    <input placeholder="Estado" id="estado">
-    <button class="primary" onclick="addCausa()">Guardar</button>
-    <ul id="causas-list"></ul>
-  </div>
-</section>
+    <section id="actuaciones" class="section">
+      <article class="card">
+        <h3>Nueva actuación</h3>
+        <form id="formActuacion">
+          <div class="form-grid">
+            <label>Causa asociada
+              <select name="causaId" id="actuacionCausaSelect" required></select>
+            </label>
+            <label>Fecha
+              <input type="date" name="fecha" required />
+            </label>
+            <label>Tipo
+              <input name="tipo" required />
+            </label>
+          </div>
+          <label>Descripción
+            <textarea name="descripcion" required></textarea>
+          </label>
+          <button type="submit" class="primary">Guardar actuación</button>
+        </form>
+      </article>
+      <article class="card">
+        <h3>Actuaciones registradas</h3>
+        <div id="actuacionesList" class="list"></div>
+      </article>
+    </section>
 
-<!-- ACTUACIONES -->
-<section id="act" class="section">
-  <div class="card">
-    <h3>Actuación</h3>
-    <input type="date" id="actFecha">
-    <input placeholder="Descripción" id="actDesc">
-    <input placeholder="Causa" id="actCausa">
-    <input placeholder="Observaciones" id="actObs">
-    <button class="primary" onclick="addAct()">Agregar</button>
-    <ul id="act-list"></ul>
-  </div>
-</section>
+    <section id="audiencias" class="section">
+      <article class="card">
+        <h3>Nueva audiencia</h3>
+        <form id="formAudiencia">
+          <div class="form-grid">
+            <label>Fecha
+              <input type="date" name="fecha" required />
+            </label>
+            <label>Hora
+              <input type="time" name="hora" required />
+            </label>
+            <label>Lugar
+              <input name="lugar" required />
+            </label>
+            <label>Causa asociada
+              <select name="causaId" id="audienciaCausaSelect" required></select>
+            </label>
+          </div>
+          <button type="submit" class="primary">Guardar audiencia</button>
+        </form>
+      </article>
+      <article class="card">
+        <h3>Audiencias registradas</h3>
+        <div id="audienciasList" class="list"></div>
+      </article>
+    </section>
 
-<!-- AUDIENCIAS -->
-<section id="aud" class="section">
-  <div class="card">
-    <h3>Audiencia</h3>
-    <input type="date" id="audFecha">
-    <input type="time" id="audHora">
-    <input placeholder="Tipo" id="audTipo">
-    <input placeholder="Causa" id="audCausa">
-    <input placeholder="Lugar" id="audLugar">
-    <button class="primary" onclick="addAud()">Agregar</button>
-    <ul id="aud-list"></ul>
-  </div>
-</section>
+    <section id="tareas" class="section">
+      <article class="card">
+        <h3>Nueva tarea</h3>
+        <form id="formTarea">
+          <div class="form-grid">
+            <label>Fecha
+              <input type="date" name="fecha" required />
+            </label>
+            <label>Tarea
+              <input name="tarea" required />
+            </label>
+            <label>Prioridad
+              <select name="prioridad" required>
+                <option value="Alta">Alta</option>
+                <option value="Media">Media</option>
+                <option value="Baja">Baja</option>
+              </select>
+            </label>
+            <label>Estado
+              <select name="estado" required>
+                <option value="pendiente">pendiente</option>
+                <option value="realizada">realizada</option>
+              </select>
+            </label>
+          </div>
+          <button type="submit" class="primary">Guardar tarea</button>
+        </form>
+      </article>
+      <article class="card">
+        <h3>Agenda / Tareas</h3>
+        <div id="tareasList" class="list"></div>
+      </article>
+    </section>
 
-<!-- HONORARIOS -->
-<section id="hon" class="section">
-  <div class="card">
-    <h3>Honorarios</h3>
-    <input type="date" id="honFecha">
-    <input placeholder="Monto" id="honMonto">
-    <input placeholder="Concepto" id="honConcepto">
-    <input placeholder="Causa" id="honCausa">
-    <button class="primary" onclick="addHon()">Agregar</button>
-    <ul id="hon-list"></ul>
-  </div>
-</section>
+    <section id="honorarios" class="section">
+      <article class="card">
+        <h3>Nuevo honorario</h3>
+        <form id="formHonorario">
+          <div class="form-grid">
+            <label>Causa asociada
+              <select name="causaId" id="honorarioCausaSelect" required></select>
+            </label>
+            <label>Monto
+              <input type="number" min="0" step="0.01" name="monto" required />
+            </label>
+            <label>Estado
+              <select name="estado" required>
+                <option value="pendiente">pendiente</option>
+                <option value="cobrado">cobrado</option>
+              </select>
+            </label>
+          </div>
+          <label>Observaciones
+            <textarea name="observaciones"></textarea>
+          </label>
+          <button type="submit" class="primary">Guardar honorario</button>
+        </form>
+      </article>
+      <article class="card">
+        <h3>Honorarios registrados</h3>
+        <div id="honorariosList" class="list"></div>
+      </article>
+    </section>
+  </main>
 
-</main>
+  <script>
+    // Base de datos IndexedDB para uso 100% offline.
+    const DB_NAME = 'LexGestion2DB';
+    const DB_VERSION = 1;
+    const STORES = ['causas', 'actuaciones', 'audiencias', 'tareas', 'honorarios'];
+    let db = null;
 
-<script>
-const dbName="LexGestionDB_v3";
-let db;
+    // Cache de datos para renderizar dashboard y listados.
+    const state = {
+      causas: [],
+      actuaciones: [],
+      audiencias: [],
+      tareas: [],
+      honorarios: []
+    };
 
-fecha.textContent=new Date().toLocaleDateString("es-AR");
+    document.getElementById('todayDate').textContent = new Date().toLocaleDateString('es-AR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
 
-const req=indexedDB.open(dbName,1);
-req.onupgradeneeded=e=>{
-  db=e.target.result;
-  ["agenda","causas","act","aud","hon"].forEach(s=>{
-    if(!db.objectStoreNames.contains(s))
-      db.createObjectStore(s,{keyPath:"id",autoIncrement:true});
-  });
-};
-req.onsuccess=e=>{db=e.target.result;loadAll()};
+    setupTabs();
+    setupForms();
+    openDatabase();
 
-function show(id,btn){
-  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-  document.querySelectorAll("aside button").forEach(b=>b.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  btn.classList.add("active");
-  title.textContent=btn.textContent;
-}
+    function setupTabs() {
+      const menu = document.getElementById('menuTabs');
+      menu.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-section]');
+        if (!button) return;
 
-/* AGENDA */
-function addAgenda(){
-  if(!agendaFecha.value||!agendaTarea.value)return;
-  db.transaction("agenda","readwrite").objectStore("agenda")
-    .add({fecha:agendaFecha.value,lugar:agendaLugar.value,tarea:agendaTarea.value,obs:agendaObs.value})
-    .transaction.oncomplete=loadAgenda;
-}
-function loadAgenda(){
-  const ul=agenda-list; ul.innerHTML="";
-  db.transaction("agenda").objectStore("agenda").openCursor().onsuccess=e=>{
-    const c=e.target.result;
-    if(c){ul.innerHTML+=`<li>${c.value.fecha} – ${c.value.tarea}</li>`;c.continue();}
-  };
-}
+        document.querySelectorAll('.menu button').forEach((btn) => btn.classList.remove('active'));
+        document.querySelectorAll('.section').forEach((section) => section.classList.remove('active'));
 
-/* CAUSAS */
-function addCausa(){
-  if(!caratula.value)return;
-  db.transaction("causas","readwrite").objectStore("causas")
-    .add({caratula:caratula.value,expediente:expediente.value,estado:estado.value})
-    .transaction.oncomplete=loadCausas;
-}
-function loadCausas(){
-  const ul=causas-list; ul.innerHTML="";
-  db.transaction("causas").objectStore("causas").openCursor().onsuccess=e=>{
-    const c=e.target.result;
-    if(c){ul.innerHTML+=`<li>${c.value.caratula} – ${c.value.estado}</li>`;c.continue();}
-  };
-}
+        button.classList.add('active');
+        const sectionId = button.getAttribute('data-section');
+        document.getElementById(sectionId).classList.add('active');
+        document.getElementById('pageTitle').textContent = button.textContent;
+      });
+    }
 
-/* ACTUACIONES */
-function addAct(){
-  if(!actDesc.value)return;
-  db.transaction("act","readwrite").objectStore("act")
-    .add({fecha:actFecha.value,desc:actDesc.value,causa:actCausa.value})
-    .transaction.oncomplete=loadAct;
-}
-function loadAct(){
-  const ul=act-list; ul.innerHTML="";
-  db.transaction("act").objectStore("act").openCursor().onsuccess=e=>{
-    const c=e.target.result;
-    if(c){ul.innerHTML+=`<li>${c.value.fecha} – ${c.value.desc}</li>`;c.continue();}
-  };
-}
+    function setupForms() {
+      document.getElementById('formCausa').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const data = formToObject(event.target);
+        await addRecord('causas', data);
+        event.target.reset();
+        await loadAllData();
+      });
 
-/* AUDIENCIAS */
-function addAud(){
-  if(!audFecha.value)return;
-  db.transaction("aud","readwrite").objectStore("aud")
-    .add({fecha:audFecha.value,hora:audHora.value,tipo:audTipo.value,causa:audCausa.value})
-    .transaction.oncomplete=loadAud;
-}
-function loadAud(){
-  const ul=aud-list; ul.innerHTML="";
-  db.transaction("aud").objectStore("aud").openCursor().onsuccess=e=>{
-    const c=e.target.result;
-    if(c){ul.innerHTML+=`<li>${c.value.fecha} ${c.value.hora} – ${c.value.tipo}</li>`;c.continue();}
-  };
-}
+      document.getElementById('formActuacion').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const data = formToObject(event.target);
+        data.causaId = Number(data.causaId);
+        await addRecord('actuaciones', data);
+        event.target.reset();
+        await loadAllData();
+      });
 
-/* HONORARIOS */
-function addHon(){
-  if(!honMonto.value)return;
-  db.transaction("hon","readwrite").objectStore("hon")
-    .add({fecha:honFecha.value,monto:honMonto.value,concepto:honConcepto.value})
-    .transaction.oncomplete=loadHon;
-}
-function loadHon(){
-  const ul=hon-list; ul.innerHTML="";
-  db.transaction("hon").objectStore("hon").openCursor().onsuccess=e=>{
-    const c=e.target.result;
-    if(c){ul.innerHTML+=`<li>${c.value.fecha} – $${c.value.monto}</li>`;c.continue();}
-  };
-}
+      document.getElementById('formAudiencia').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const data = formToObject(event.target);
+        data.causaId = Number(data.causaId);
+        await addRecord('audiencias', data);
+        event.target.reset();
+        await loadAllData();
+      });
 
-function loadAll(){
-  loadAgenda();loadCausas();loadAct();loadAud();loadHon();
-}
-</script>
+      document.getElementById('formTarea').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const data = formToObject(event.target);
+        await addRecord('tareas', data);
+        event.target.reset();
+        await loadAllData();
+      });
 
+      document.getElementById('formHonorario').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const data = formToObject(event.target);
+        data.causaId = Number(data.causaId);
+        data.monto = Number(data.monto);
+        await addRecord('honorarios', data);
+        event.target.reset();
+        await loadAllData();
+      });
+    }
+
+    function openDatabase() {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+      request.onupgradeneeded = (event) => {
+        const database = event.target.result;
+        STORES.forEach((storeName) => {
+          if (!database.objectStoreNames.contains(storeName)) {
+            database.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+          }
+        });
+      };
+
+      request.onsuccess = async (event) => {
+        db = event.target.result;
+        await loadAllData();
+      };
+
+      request.onerror = () => {
+        alert('No se pudo abrir la base de datos IndexedDB.');
+      };
+    }
+
+    function formToObject(form) {
+      return Object.fromEntries(new FormData(form).entries());
+    }
+
+    function transaction(storeName, mode = 'readonly') {
+      return db.transaction(storeName, mode).objectStore(storeName);
+    }
+
+    function addRecord(storeName, data) {
+      return new Promise((resolve, reject) => {
+        const request = transaction(storeName, 'readwrite').add(data);
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function updateRecord(storeName, data) {
+      return new Promise((resolve, reject) => {
+        const request = transaction(storeName, 'readwrite').put(data);
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function deleteRecord(storeName, id) {
+      return new Promise((resolve, reject) => {
+        const request = transaction(storeName, 'readwrite').delete(id);
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function getAllRecords(storeName) {
+      return new Promise((resolve, reject) => {
+        const request = transaction(storeName).getAll();
+        request.onsuccess = () => resolve(request.result || []);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function loadAllData() {
+      state.causas = await getAllRecords('causas');
+      state.actuaciones = await getAllRecords('actuaciones');
+      state.audiencias = await getAllRecords('audiencias');
+      state.tareas = await getAllRecords('tareas');
+      state.honorarios = await getAllRecords('honorarios');
+
+      renderCausas();
+      renderActuaciones();
+      renderAudiencias();
+      renderTareas();
+      renderHonorarios();
+      renderDashboard();
+      renderCausaSelects();
+    }
+
+    function getCausaLabel(causaId) {
+      const causa = state.causas.find((item) => item.id === Number(causaId));
+      return causa ? `${causa.caratula} (${causa.expediente})` : 'Sin causa';
+    }
+
+    function renderCausaSelects() {
+      const options = ['<option value="">Seleccionar causa</option>']
+        .concat(state.causas.map((causa) => `<option value="${causa.id}">${escapeHTML(causa.caratula)} (${escapeHTML(causa.expediente)})</option>`))
+        .join('');
+
+      ['actuacionCausaSelect', 'audienciaCausaSelect', 'honorarioCausaSelect'].forEach((id) => {
+        const select = document.getElementById(id);
+        select.innerHTML = options;
+      });
+    }
+
+    function renderCausas() {
+      const container = document.getElementById('causasList');
+      if (!state.causas.length) {
+        container.innerHTML = '<div class="empty">Aún no hay causas cargadas.</div>';
+        return;
+      }
+
+      container.innerHTML = state.causas.map((causa) => `
+        <div class="list-item">
+          <div class="title">${escapeHTML(causa.caratula)}</div>
+          <div class="meta-line">Expediente: ${escapeHTML(causa.expediente)} | Juzgado: ${escapeHTML(causa.juzgado || '-')}</div>
+          <div class="meta-line">Fuero: ${escapeHTML(causa.fuero || '-')} | Parte: ${escapeHTML(causa.parte || '-')}</div>
+          <div class="meta-line">Estado: ${escapeHTML(causa.estado || '-')}</div>
+          <div class="meta-line">Obs: ${escapeHTML(causa.observaciones || '-')}</div>
+          <div class="actions">
+            <button class="btn-small btn-success" data-edit-causa="${causa.id}">Editar</button>
+            <button class="btn-small btn-danger" data-delete-causa="${causa.id}">Eliminar</button>
+          </div>
+        </div>
+      `).join('');
+
+      container.querySelectorAll('[data-edit-causa]').forEach((button) => {
+        button.addEventListener('click', () => editCausa(Number(button.dataset.editCausa)));
+      });
+      container.querySelectorAll('[data-delete-causa]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          await deleteRecord('causas', Number(button.dataset.deleteCausa));
+          await loadAllData();
+        });
+      });
+    }
+
+    async function editCausa(id) {
+      const causa = state.causas.find((item) => item.id === id);
+      if (!causa) return;
+
+      const fields = ['caratula', 'expediente', 'juzgado', 'fuero', 'parte', 'estado', 'observaciones'];
+      const updated = { ...causa };
+
+      for (const field of fields) {
+        const value = prompt(`Editar ${field}:`, causa[field] || '');
+        if (value === null) return;
+        updated[field] = value;
+      }
+
+      await updateRecord('causas', updated);
+      await loadAllData();
+    }
+
+    function renderActuaciones() {
+      const container = document.getElementById('actuacionesList');
+      if (!state.actuaciones.length) {
+        container.innerHTML = '<div class="empty">Aún no hay actuaciones cargadas.</div>';
+        return;
+      }
+
+      container.innerHTML = state.actuaciones.map((item) => `
+        <div class="list-item">
+          <div class="title">${escapeHTML(item.tipo)} - ${escapeHTML(item.fecha)}</div>
+          <div class="meta-line">Causa: ${escapeHTML(getCausaLabel(item.causaId))}</div>
+          <div class="meta-line">${escapeHTML(item.descripcion)}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderAudiencias() {
+      const container = document.getElementById('audienciasList');
+      if (!state.audiencias.length) {
+        container.innerHTML = '<div class="empty">Aún no hay audiencias cargadas.</div>';
+        return;
+      }
+
+      const sorted = [...state.audiencias].sort((a, b) => `${a.fecha} ${a.hora}`.localeCompare(`${b.fecha} ${b.hora}`));
+      container.innerHTML = sorted.map((item) => `
+        <div class="list-item">
+          <div class="title">${escapeHTML(item.fecha)} ${escapeHTML(item.hora)} - ${escapeHTML(item.lugar)}</div>
+          <div class="meta-line">Causa: ${escapeHTML(getCausaLabel(item.causaId))}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderTareas() {
+      const container = document.getElementById('tareasList');
+      if (!state.tareas.length) {
+        container.innerHTML = '<div class="empty">Aún no hay tareas cargadas.</div>';
+        return;
+      }
+
+      const sorted = [...state.tareas].sort((a, b) => a.fecha.localeCompare(b.fecha));
+      container.innerHTML = sorted.map((item) => `
+        <div class="list-item">
+          <div class="title">${escapeHTML(item.fecha)} - ${escapeHTML(item.tarea)}</div>
+          <div class="meta-line">Prioridad: ${escapeHTML(item.prioridad)} | Estado: ${escapeHTML(item.estado)}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderHonorarios() {
+      const container = document.getElementById('honorariosList');
+      if (!state.honorarios.length) {
+        container.innerHTML = '<div class="empty">Aún no hay honorarios cargados.</div>';
+        return;
+      }
+
+      container.innerHTML = state.honorarios.map((item) => `
+        <div class="list-item">
+          <div class="title">$ ${Number(item.monto).toFixed(2)} - ${escapeHTML(item.estado)}</div>
+          <div class="meta-line">Causa: ${escapeHTML(getCausaLabel(item.causaId))}</div>
+          <div class="meta-line">Obs: ${escapeHTML(item.observaciones || '-')}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderDashboard() {
+      document.getElementById('metricCausas').textContent = state.causas.length;
+      document.getElementById('metricTareasPendientes').textContent = state.tareas.filter((item) => item.estado === 'pendiente').length;
+      document.getElementById('metricHonorariosPendientes').textContent = state.honorarios.filter((item) => item.estado === 'pendiente').length;
+
+      const today = new Date().toISOString().slice(0, 10);
+
+      const vencimientos = state.tareas
+        .filter((item) => item.fecha >= today && item.estado === 'pendiente')
+        .sort((a, b) => a.fecha.localeCompare(b.fecha))
+        .slice(0, 5);
+
+      const audienciasCercanas = state.audiencias
+        .filter((item) => item.fecha >= today)
+        .sort((a, b) => `${a.fecha} ${a.hora}`.localeCompare(`${b.fecha} ${b.hora}`))
+        .slice(0, 5);
+
+      const vencimientosContainer = document.getElementById('dashboardVencimientos');
+      const audienciasContainer = document.getElementById('dashboardAudiencias');
+
+      vencimientosContainer.innerHTML = vencimientos.length
+        ? vencimientos.map((item) => `<div class="list-item"><div class="title">${escapeHTML(item.fecha)} - ${escapeHTML(item.tarea)}</div><div class="meta-line">Prioridad: ${escapeHTML(item.prioridad)}</div></div>`).join('')
+        : '<div class="empty">Sin vencimientos próximos.</div>';
+
+      audienciasContainer.innerHTML = audienciasCercanas.length
+        ? audienciasCercanas.map((item) => `<div class="list-item"><div class="title">${escapeHTML(item.fecha)} ${escapeHTML(item.hora)}</div><div class="meta-line">${escapeHTML(item.lugar)} | ${escapeHTML(getCausaLabel(item.causaId))}</div></div>`).join('')
+        : '<div class="empty">Sin audiencias cercanas.</div>';
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+  </script>
 </body>
 </html>
